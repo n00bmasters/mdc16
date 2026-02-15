@@ -1,17 +1,19 @@
 #pragma once
+
+#include "basic_block.h"
 #include "instruction.h"
+#include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <unordered_map>
 #include <vector>
 
-class Decoder
-{
-  std::vector<uint8_t> memmory;
-  std::unordered_map<uint16_t, BB*> functionTable;
+class Decoder {
+  std::vector<std::byte> memory;
+  std::unordered_map<uint16_t, BasicBlock *> functionTable;
 
 public:
-  BB decodeMethod(uint16_t);
-  BB decodeBB(uint16_t);
+  BasicBlock *decodeMethod(uint16_t);
+  BasicBlock *decodeBB(uint16_t);
   Instruction16 decodeInstruction(uint16_t);
 };
