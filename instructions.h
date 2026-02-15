@@ -83,7 +83,7 @@ struct InstructionImm6 : public Instruction16 {
 
 struct InstructionImm9 : public Instruction16 {
   InstructionImm9(uint16_t raw_, imm9_op_type op_type_, uint16_t immediate)
-      : Instruction16(raw_), op_type(op_type_), _immediate(immediate) {}
+      : Instruction16(raw_), op_type(getOp<imm9_op_type, 4>(raw_, 9)), _immediate(getOp<uint16_t, 9>(raw_, 0)) {}
 
   const imm9_op_type op_type;
   const uint16_t _immediate;
@@ -96,7 +96,7 @@ struct InstructionImm9 : public Instruction16 {
 struct InstructionMem3 : public Instruction16 {
   InstructionMem3(uint16_t raw_, mem3_opt_type op_type_, Register rs0,
                   Register rs1, Register rd)
-      : Instruction16(raw_), op_type(op_type_), _rs0(rs0), _rs1(rs1), _rd(rd) {}
+      : Instruction16(raw_), op_type(getOp<mem3_opt_type, 3>(raw_, 9)), _rs0(getOp<Register, 3>(raw_, 3)), _rs1(getOp<Register, 3>(raw_, 6)), _rd(getOp<Register, 3>(raw_, 0)) {}
 
   const mem3_opt_type op_type;
   const Register _rs0, _rs1, _rd;
@@ -110,8 +110,8 @@ struct InstructionShift : public Instruction16 {
 
   InstructionShift(uint16_t raw_, shifts_op_type op_type_, Register rs,
                    Register rd, uint8_t shift_val)
-      : Instruction16(raw_), op_type(op_type_), _rs(rs), _rd(rd),
-        _shift_val(shift_val) {}
+      : Instruction16(raw_), op_type(getOp<shifts_op_type, 3>(raw_, 9)), _rs(getOp<Register, 3>(raw_, 3)), _rd(getOp<Register, 3>(raw_, 0)),
+        _shift_val(getOp<uint8_t, 3>(raw_, 6)) {}
 
   const shifts_op_type op_type;
   const Register _rs, _rd;
