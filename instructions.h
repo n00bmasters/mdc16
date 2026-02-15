@@ -1,5 +1,6 @@
 #pragma once
 #include "enums.h"
+#include "register.h"
 #include "instruction.h"
 #include <cstdint>
 
@@ -40,8 +41,8 @@ class InstructionOneOp : public Instruction16
 {
 public:
 
-    InstructionOneOp(uint16_t raw_, one_op op_type_)
-        : Instruction16(raw_), op_type(op_type_)
+    InstructionOneOp(uint16_t raw_, one_op op_type, Register reg)
+        : Instruction16(raw_), _op_type(op_type), _register(reg)
     {}
 
     uint8_t getRawOpType() const
@@ -49,19 +50,20 @@ public:
         return (_raw >> 9) & 0x7;
     }
 
-    uint8_t reg() const
+    uint8_t getRawReg() const
     {
         return (_raw >> 6) & 0x7;
     }
 
     one_op opType() const
     {
-        return op_type;
+        return _op_type;
     }
 
 private:
-
-    one_op op_type;
+    
+    one_op _op_type;
+    Register _register;
 };
 
 
@@ -73,8 +75,8 @@ class InstructionTwoOp : public Instruction16
 {
 public:
 
-    InstructionTwoOp(uint16_t raw_, two_op op_type_)
-        : Instruction16(raw_), op_type(op_type_)
+    InstructionTwoOp(uint16_t raw_, two_op op_type_, Register reg1, Register reg2)
+        : Instruction16(raw_), op_type(op_type_), _reg1(reg1), _reg2(reg2)
     {}
 
     uint8_t srcReg() const
@@ -95,6 +97,8 @@ public:
 private:
 
     two_op op_type;
+    Register _reg1;
+    Register _reg2;
 };
 
 
@@ -106,8 +110,8 @@ class InstructionMem2 : public Instruction16
 {
 public:
 
-    InstructionMem2(uint16_t raw_, mem2_op op_type_)
-        : Instruction16(raw_), op_type(op_type_)
+    InstructionMem2(uint16_t raw_, mem2_op op_type_, Register rs, Register rd)
+        : Instruction16(raw_), op_type(op_type_), _rs(rs), _rd(rd)
     {}
 
     uint8_t reg() const
@@ -128,6 +132,8 @@ public:
 private:
 
     mem2_op op_type;
+    Register _rs;
+    Register _rd;
 };
 
 
@@ -139,8 +145,8 @@ class InstructionImm6 : public Instruction16
 {
 public:
 
-    InstructionImm6(uint16_t raw_, imm_6_op op_type_)
-        : Instruction16(raw_), op_type(op_type_)
+    InstructionImm6(uint16_t raw_, imm_6_op op_type_, Register rd)
+        : Instruction16(raw_), op_type(op_type_), _rd(rd)
     {}
 
     int16_t immediate() const
@@ -161,6 +167,7 @@ public:
 private:
 
     imm_6_op op_type;
+    Register _rd;
 };
 
 
@@ -172,19 +179,9 @@ class InstructionImm9 : public Instruction16
 {
 public:
 
-    InstructionImm9(uint16_t raw_, imm9_op_type op_type_)
-        : Instruction16(raw_), op_type(op_type_)
+    InstructionImm9(uint16_t raw_, imm9_op_type op_type_, int immediate)
+        : Instruction16(raw_), op_type(op_type_), _immediate(immediate)
     {}
-
-    int16_t immediate() const
-    {
-        int16_t val = _raw & 0x1FF;
-
-        if (val & 0x100)
-            val |= 0xFE00;
-
-        return val;
-    }
 
     imm9_op_type opType() const
     {
@@ -194,6 +191,7 @@ public:
 private:
 
     imm9_op_type op_type;
+    int _immediate;
 };
 
 
@@ -205,8 +203,8 @@ class InstructionMem3 : public Instruction16
 {
 public:
 
-    InstructionMem3(uint16_t raw_, mem3_opt_type op_type_)
-        : Instruction16(raw_), op_type(op_type_)
+    InstructionMem3(uint16_t raw_, mem3_opt_type op_type_, Register rs0, Register rs1, Register rd)
+        : Instruction16(raw_), op_type(op_type_), _rs0(rs0), _rs1(rs1), _rd(rd)
     {}
 
     uint8_t reg() const
@@ -227,6 +225,9 @@ public:
 private:
 
     mem3_opt_type op_type;
+    Register _rs0;
+    Register _rs1;
+    Register _rd;
 };
 
 
@@ -238,8 +239,8 @@ class InstructionShift : public Instruction16
 {
 public:
 
-    InstructionShift(uint16_t raw_, shifts_op_type op_type_)
-        : Instruction16(raw_), op_type(op_type_)
+    InstructionShift(uint16_t raw_, shifts_op_type op_type_, Register rs, Register rd, uint8_t shift_val)
+        : Instruction16(raw_), op_type(op_type_), _rs(rs), _rd(rd), _shift_val(shift_val)
     {}
 
     uint8_t reg() const
@@ -247,9 +248,9 @@ public:
         return (_raw >> 3) & 0x7;
     }
 
-    uint8_t amount() const
+    uint8_t val() const
     {
-        return _raw & 0x7;
+        return _shift_val;
     }
 
     shifts_op_type opType() const
@@ -260,6 +261,9 @@ public:
 private:
 
     shifts_op_type op_type;
+    Register _rs;
+    Register _rd;
+    uint8_t _shift_val;
 };
 
 
@@ -271,8 +275,8 @@ class InstructionALU2 : public Instruction16
 {
 public:
 
-    InstructionALU2(uint16_t raw_, alu2_op_type op_type_)
-        : Instruction16(raw_), op_type(op_type_)
+    InstructionALU2(uint16_t raw_, alu2_op_type op_type_, Register rs, Register rd)
+        : Instruction16(raw_), op_type(op_type_), _rs(rs), _rd(rd)
     {}
 
     uint8_t reg() const
@@ -288,6 +292,8 @@ public:
 private:
 
     alu2_op_type op_type;
+    Register _rs;
+    Register _rd;
 };
 
 
@@ -299,8 +305,8 @@ class InstructionALU3 : public Instruction16
 {
 public:
 
-    InstructionALU3(uint16_t raw_, alu3_op_type op_type_)
-        : Instruction16(raw_), op_type(op_type_)
+    InstructionALU3(uint16_t raw_, alu3_op_type op_type_, Register rs0, Register rs1, Register rd)
+        : Instruction16(raw_), op_type(op_type_), _rs0(rs0), _rs1(rs1), _rd(rd)
     {}
 
     uint8_t src1() const
@@ -326,6 +332,9 @@ public:
 private:
 
     alu3_op_type op_type;
+    Register _rs0;
+    Register _rs1;
+    Register _rd;
 };
 
 
@@ -337,10 +346,9 @@ class InstructionALU3Ind : public Instruction16
 {
 public:
 
-    InstructionALU3Ind(uint16_t raw_, alu3_ind_op_type op_type_)
-        : Instruction16(raw_), op_type(op_type_)
-    {}
-
+    InstructionALU3Ind(uint16_t raw_, alu3_ind_op_type op_type_, Register rs, Register rd)
+        : Instruction16(raw_), op_type(op_type_), _rs(rs), _rd(rd)
+        {}
     uint8_t reg() const
     {
         return (_raw >> 3) & 0x7;
@@ -354,6 +362,8 @@ public:
 private:
 
     alu3_ind_op_type op_type;
+    Register _rs;
+    Register _rd;
 };
 
 
@@ -365,14 +375,16 @@ class InstructionBranchAbs : public Instruction16
 {
 public:
 
-    explicit InstructionBranchAbs(uint16_t raw_)
-        : Instruction16(raw_)
+    explicit InstructionBranchAbs(uint16_t raw_, uint8_t condition)
+        : Instruction16(raw_), _condition(condition)
     {}
 
     uint16_t address() const
     {
         return _raw & 0x7FF;
     }
+private:
+    uint8_t _condition; 
 };
 
 
@@ -380,12 +392,12 @@ public:
 // ================= BRANCH REL =================
 //
 
-class InstructionBranchRel : public Instruction16
+class InstructionBranchRelN : public Instruction16
 {
 public:
 
-    explicit InstructionBranchRel(uint16_t raw_)
-        : Instruction16(raw_)
+    explicit InstructionBranchRelN(uint16_t raw_, uint8_t condition, uint16_t immediate)
+        : Instruction16(raw_), _condition(condition), _immediate(immediate)
     {}
 
     int16_t offset() const
@@ -397,4 +409,34 @@ public:
 
         return val;
     }
+private:
+
+    uint8_t _condition;
+    uint16_t _immediate
+};
+
+
+
+
+class InstructionBranchRelP : public Instruction16
+{
+public:
+
+    explicit InstructionBranchRelP(uint16_t raw_, uint8_t condition, uint16_t immediate)
+        : Instruction16(raw_), _condition(condition), _immediate(immediate)
+    {}
+
+    int16_t offset() const
+    {
+        int16_t val = _raw & 0x1FF;
+
+        if (val & 0x100)
+            val |= 0xFE00;
+
+        return val;
+    }
+
+private:
+    uint16_t _immediate;
+    uint8_t _condition;
 };
