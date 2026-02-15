@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -7,7 +8,7 @@ std::vector<uint8_t> process_data(std::ifstream& infile) {
     std::vector<uint8_t> v;
     std::string hexStr, copy;
     std::getline(infile, hexStr); // disregard first line (versioning, possibly needs to be checked)
-    while (;;) {
+    while (1) {
         std::copy(hexStr.begin(), hexStr.end(), std::back_inserter(copy));
         std::getline(infile, hexStr);
         if (hexStr.empty()) {
@@ -15,10 +16,9 @@ std::vector<uint8_t> process_data(std::ifstream& infile) {
         }
         if (hexStr[0] == '#') {
             // Parse format: value*count (e.g., 111*00 means value=0x111, count=0x00)
-            size_t starPos = copy.find('*');
-            if (starPos != std::string::npos) {
-                std::string valueStr = copy.substr(0, copy);
-                std::string countStr = copy.substr(copy + 1);
+            std::istringstream iss(copy);
+            std::string valueStr, countStr;
+            if (std::getline(iss, valueStr, '*') && std::getline(iss, countStr)) {
                 uint32_t value = std::stoi(valueStr, nullptr, 10);
                 uint32_t count = std::stoi(countStr, nullptr, 16);
                 for (uint32_t i = 0; i < count; i++) {
@@ -33,7 +33,6 @@ std::vector<uint8_t> process_data(std::ifstream& infile) {
             v.push_back(value);
         }
     }
-    infile.close();
     return v;
 
 }
@@ -48,5 +47,7 @@ int main(int argc, char* argv[]) {
         std::cerr << "Error opening file: " << argv[1] << std::endl;
         return 1;
     }
+    std::vector<uint8_t> data = process_data(infile);
+    infile.close();
 
 }
