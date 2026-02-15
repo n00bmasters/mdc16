@@ -1,3 +1,4 @@
+#pragma once
 
 enum class alu3_ind_op_type { BIT, CMP = 6 };
 
