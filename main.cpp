@@ -6,25 +6,31 @@
 
 std::vector<uint8_t> process_data(std::ifstream& infile) {
     std::vector<uint8_t> v;
-    std::string hexStr, copy;
+    std::string hexStr;
     std::getline(infile, hexStr); // disregard first line (versioning, possibly needs to be checked)
-    while (1) {
-        std::copy(hexStr.begin(), hexStr.end(), std::back_inserter(copy));
-        std::getline(infile, hexStr);
+    while (std::getline(infile, hexStr)) {
+        auto start = hexStr.find_first_not_of(" \t\r\n");
+        if (start == std::string::npos) {
+            break;
+        }
+        auto end = hexStr.find_last_not_of(" \t\r\n");
+        hexStr = hexStr.substr(start, end - start + 1);
         if (hexStr.empty()) {
             break;
         }
         if (hexStr[0] == '#') {
-            // Parse format: value*count (e.g., 111*00 means value=0x111, count=0x00)
-            std::istringstream iss(copy);
-            std::string valueStr, countStr;
-            if (std::getline(iss, valueStr, '*') && std::getline(iss, countStr)) {
-                uint32_t value = std::stoi(valueStr, nullptr, 10);
-                uint32_t count = std::stoi(countStr, nullptr, 16);
+            continue;
+        }
+        auto starPos = hexStr.find('*');
+        if (starPos != std::string::npos) {
+            std::string valueStr = hexStr.substr(0, starPos);
+            std::string countStr = hexStr.substr(starPos + 1);
+            if (!valueStr.empty() && !countStr.empty()) {
+                uint32_t count = std::stoi(valueStr, nullptr, 10);
+                uint32_t value = std::stoi(countStr, nullptr, 16);
                 for (uint32_t i = 0; i < count; i++) {
                     v.push_back(value & 0xFF);
                 }
-                continue;
             }
             continue;
         }
@@ -48,6 +54,10 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     std::vector<uint8_t> data = process_data(infile);
+    // for (auto i : data) {
+    //     std::cout << std::hex << static_cast<int>(i) << std::endl;
+    // }
+    // std::cout << std::endl;
     infile.close();
 
 }
