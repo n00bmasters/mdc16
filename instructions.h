@@ -134,8 +134,8 @@ struct InstructionMem3 : public Instruction16 {
         _rd(getRegister(raw_, 0)) {
     assert(((raw_ >> 12) & 0b1111) == 0b1010); // group coding
     assert(((raw_ >> 9)) & 0b111 == static_cast<uint16_t>(op_type)); // op type
-    assert((raw_ >> 6) & 0b111 == static_cast<uint16_t>(rs0));
-    assert((raw_ >> 3) & 0b111 == static_cast<uint16_t>(rs1));
+    assert((raw_ >> 3) & 0b111 == static_cast<uint16_t>(rs0));
+    assert((raw_ >> 6) & 0b111 == static_cast<uint16_t>(rs1));
     assert((raw_ & 0b111) == static_cast<uint16_t>(rd));
   }
 
