@@ -13,6 +13,11 @@ static T getOp(uint16_t raw, int pos) {
   return static_cast<T>((raw >> pos) & ((1 << size) - 1));
 }
 
+template<int size>
+static uint16_t getImmediate(uint16_t raw, int pos) {
+  return (raw >> pos) & ((1 << size) - 1);
+}
+
 //
 // ================= ZERO_OP =================
 //
@@ -45,7 +50,8 @@ struct InstructionOneOp : public Instruction16 {
 
 struct InstructionTwoOp : public Instruction16 {
   InstructionTwoOp(uint16_t raw_, two_op op_type_, Register reg1, Register reg2)
-      : Instruction16(raw_), op_type(op_type_), _reg1(reg1), _reg2(reg2) {}
+      : Instruction16(raw_), op_type(getOp<two_op, 5>(raw_, 6)), _reg1(getRegister(raw_, 0)), 
+    _reg2(getRegister(raw_, 3))  {}
 
   const two_op op_type;
   const Register _reg1, _reg2;
@@ -58,22 +64,24 @@ struct InstructionTwoOp : public Instruction16 {
 struct InstructionMem2 : public Instruction16 {
 
   InstructionMem2(uint16_t raw_, mem2_op op_type_, Register rs, Register rd)
-      : Instruction16(raw_), op_type(op_type_), _rs(rs), _rd(rd) {}
+      : Instruction16(raw_), op_type(getOp<mem2_op, 5>(raw_, 6)), _rs(getRegister(raw_, 3)), _rd(getRegister(raw_, 0)) {}
 
   const mem2_op op_type;
   const Register _rs, _rd;
 };
 
-//
+//q
 // ================= IMM6 =================
 //
 
 struct InstructionImm6 : public Instruction16 {
 
-  InstructionImm6(uint16_t raw_, imm_6_op op_type_, Register rd)
-      : Instruction16(raw_), op_type(op_type_), _rd(rd) {}
+  InstructionImm6(uint16_t raw_, imm_6_op op_type_, uint16_t imm6, Register rd)
+      : Instruction16(raw_), op_type(getOp<imm_6_op, 4>(raw_,9)), _imm6(getImmediate<6>(raw_, 3)), 
+      _rd(getRegister(raw_, 0)) {}
 
   const imm_6_op op_type;
+  const uint16_t _imm6;
   const Register _rd;
 };
 
