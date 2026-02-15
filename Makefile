@@ -1,3 +1,8 @@
+# Python venv
+VENV_PATH = $(shell cd .. && pwd)/.venv
+VENV_BIN = $(VENV_PATH)/bin
+COCAS = $(VENV_BIN)/cocas
+
 # Compiler and flags
 CXX = g++
 CXXFLAGS = -std=c++17 -Wall -Wextra -O2
@@ -7,6 +12,7 @@ LDFLAGS =
 SRC_DIR = .
 BUILD_DIR = build
 BIN_DIR = bin
+EXAMPLES_DIR = examples
 
 # Target executable
 TARGET = $(BIN_DIR)/app
@@ -41,5 +47,17 @@ clean:
 run: $(TARGET)
 	./$(TARGET)
 
+# Examples
+EXAMPLE_SOURCES = $(wildcard $(EXAMPLES_DIR)/*.asm)
+EXAMPLE_TARGETS = $(patsubst $(EXAMPLES_DIR)/%.asm,$(EXAMPLES_DIR)/%.img,$(EXAMPLE_SOURCES))
+
+examples: $(EXAMPLE_TARGETS)
+
+$(EXAMPLES_DIR)/%.img: $(EXAMPLES_DIR)/%.asm
+	$(COCAS) $< -o $@
+
+clean-examples:
+	rm -f $(EXAMPLE_TARGETS)
+
 # Phony targets
-.PHONY: all clean run
+.PHONY: all clean run examples clean-examples
