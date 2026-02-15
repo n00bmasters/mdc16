@@ -3,12 +3,6 @@
 #include <string>
 #include <vector>
 
-uint8_t get_next(std::ifstream& infile) {
-    uint8_t value;
-    infile >> value;
-    return value;
-}
-
 std::vector<uint8_t> process_data(std::ifstream& infile) {
     std::vector<uint8_t> v;
     std::string hexStr, copy;
@@ -19,13 +13,13 @@ std::vector<uint8_t> process_data(std::ifstream& infile) {
         if (hexStr.empty()) {
             break;
         }
-        if (hexStr[0] == '#'){
+        if (hexStr[0] == '#') {
             // Parse format: value*count (e.g., 111*00 means value=0x111, count=0x00)
-            size_t starPos = hexStr.find('*');
+            size_t starPos = copy.find('*');
             if (starPos != std::string::npos) {
-                std::string valueStr = hexStr.substr(0, starPos);
-                std::string countStr = hexStr.substr(starPos + 1);
-                uint32_t value = std::stoi(valueStr, nullptr, 16);
+                std::string valueStr = copy.substr(0, copy);
+                std::string countStr = copy.substr(copy + 1);
+                uint32_t value = std::stoi(valueStr, nullptr, 10);
                 uint32_t count = std::stoi(countStr, nullptr, 16);
                 for (uint32_t i = 0; i < count; i++) {
                     v.push_back(value & 0xFF);
