@@ -1,13 +1,28 @@
 asect 0x00
-code_start: ext
-rsect test
-code_start>
-# load string length into r0
-halt
+main: ext               # Declare labels
+default_handler: ext    # as external
 
-string_start:
-dc "Hello, wr5yrh5orld", 0x0a, 0x00
-string_stop:
+# Interrupt vector table (IVT)
+# Place a vector to program start and
+# map all internal exceptions to default_handler
+dc main, 0              # Startup/Reset vector
+dc default_handler, 0   # Unaligned SP
+dc default_handler, 0   # Unaligned PC
+dc default_handler, 0   # Invalid instruction
+dc default_handler, 0   # Double fault
+align 0x80              # Reserve space for the rest 
+                        # of IVT
+
+rsect exc_handlers
+default_handler>
+    halt
+
+rsect 0x1234
+fib:
 
 
-end
+rsect main
+
+main>
+    ldi r0, 6
+end.
