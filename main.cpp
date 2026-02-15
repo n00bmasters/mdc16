@@ -4,8 +4,8 @@
 #include <string>
 #include <vector>
 
-std::vector<uint8_t> process_data(std::ifstream& infile) {
-    std::vector<uint8_t> v;
+std::vector<std::byte> process_data(std::ifstream& infile) {
+    std::vector<std::byte> v;
     std::string hexStr;
     std::getline(infile, hexStr); // disregard first line (versioning, possibly needs to be checked)
     while (std::getline(infile, hexStr)) {
@@ -29,14 +29,14 @@ std::vector<uint8_t> process_data(std::ifstream& infile) {
                 uint32_t count = std::stoi(valueStr, nullptr, 10);
                 uint32_t value = std::stoi(countStr, nullptr, 16);
                 for (uint32_t i = 0; i < count; i++) {
-                    v.push_back(value & 0xFF);
+                    v.push_back(static_cast<std::byte>(value & 0xFF));
                 }
             }
             continue;
         }
         if (hexStr.length() == 2) {
             uint8_t value = std::stoi(hexStr, nullptr, 16);
-            v.push_back(value);
+            v.push_back(static_cast<std::byte>(value));
         }
     }
     return v;
