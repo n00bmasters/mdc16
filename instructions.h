@@ -124,9 +124,9 @@ struct InstructionShift : public Instruction16 {
 
 struct InstructionALU2 : public Instruction16 {
 
-  InstructionALU2(uint16_t raw_, alu2_op_type op_type_, Register rs,
-                  Register rd)
-      : Instruction16(raw_), op_type(op_type_), _rs(rs), _rd(rd) {}
+  InstructionALU2(uint16_t raw_)
+      : Instruction16(raw_), op_type(getOp<alu2_op_type, 3>(raw_, 6)),
+        _rs(getRegister(raw_, 3)), _rd(getRegister(raw_, 0)) {}
 
   const alu2_op_type op_type;
   const Register _rs, _rd;
@@ -138,9 +138,9 @@ struct InstructionALU2 : public Instruction16 {
 
 struct InstructionALU3 : public Instruction16 {
 
-  InstructionALU3(uint16_t raw_, alu3_op_type op_type_, Register rs0,
-                  Register rs1, Register rd)
-      : Instruction16(raw_), op_type(op_type_), _rs0(rs0), _rs1(rs1), _rd(rd) {}
+    explicit InstructionALU3(uint16_t raw_)
+      : Instruction16(raw_), op_type(getOp<alu3_op_type, 3>(raw_, 3)), 
+        _rs0(getRegister(raw_, 3)), _rs1(getRegister(raw_, 6)), _rd(getRegister(raw_, 0)) {}
 
   const alu3_op_type op_type;
   const Register _rs0, _rs1, _rd;
@@ -151,9 +151,9 @@ struct InstructionALU3 : public Instruction16 {
 //
 
 struct InstructionALU3Ind : public Instruction16 {
-  explicit InstructionALU3Ind(uint16_t raw_, alu3_ind_op_type op_type_,
-                              Register rs, Register rd)
-      : Instruction16(raw_), op_type(op_type_), _rs(rs), _rd(rd) {}
+  explicit InstructionALU3Ind(uint16_t raw_)
+      : Instruction16(raw_), op_type(getOp<alu3_ind_op_type, 3>(raw_, 6)),
+        _rs(getRegister(raw_, 3)), _rd(getRegister(raw_, 0)) {}
 
   const alu3_ind_op_type op_type;
   const Register _rs, _rd;
@@ -164,8 +164,8 @@ struct InstructionALU3Ind : public Instruction16 {
 //
 
 struct InstructionBranchAbs : public Instruction16 {
-  explicit InstructionBranchAbs(uint16_t raw_, uint8_t condition)
-      : Instruction16(raw_), _condition(condition) {}
+  explicit InstructionBranchAbs(uint16_t raw_)
+      : Instruction16(raw_), _condition(getOp<uint8_t, 4>(raw_, 0)) {}
 
   const uint8_t _condition;
 };
@@ -175,18 +175,17 @@ struct InstructionBranchAbs : public Instruction16 {
 //
 
 struct InstructionBranchRelN : public Instruction16 {
-  explicit InstructionBranchRelN(uint16_t raw_, uint8_t condition,
-                                 uint16_t immediate)
-      : Instruction16(raw_), _condition(condition), _immediate(immediate) {}
-
-  const uint8_t _condition;
+  explicit InstructionBranchRelN(uint16_t raw_)
+      : Instruction16(raw_), _immediate(getOp<uint16_t, 9>(raw_, 0)), 
+        _condition(getOp<uint8_t, 4>(raw_, 9)) {}  
   const uint16_t _immediate;
+  const uint8_t _condition;
 };
 
 struct InstructionBranchRelP : public Instruction16 {
-  explicit InstructionBranchRelP(uint16_t raw_, uint8_t condition,
-                                 uint16_t immediate)
-      : Instruction16(raw_), _condition(condition), _immediate(immediate) {}
+  explicit InstructionBranchRelP(uint16_t raw_)
+      : Instruction16(raw_), _immediate(getOp<uint16_t, 9>(raw_, 0)), 
+        _condition(getOp<uint8_t, 4>(raw_, 9)) {}
 
   const uint16_t _immediate;
   const uint8_t _condition;
