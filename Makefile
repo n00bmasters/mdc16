@@ -54,7 +54,7 @@ EXAMPLE_TARGETS = $(patsubst $(EXAMPLES_DIR)/%.asm,$(EXAMPLES_DIR)/%.img,$(EXAMP
 examples: $(EXAMPLE_TARGETS)
 
 $(EXAMPLES_DIR)/%.img: $(EXAMPLES_DIR)/%.asm
-	$(COCAS) $< -o $@
+	-$(COCAS) $< -o $@
 
 clean-examples:
 	rm -f $(EXAMPLE_TARGETS)
