@@ -54,7 +54,7 @@ int main(int argc, char* argv[]) {
         std::cerr << "Error opening file: " << argv[1] << std::endl;
         return 1;
     }
-    std::vector<uint8_t> data = process_data(infile);
+    std::vector<std::byte> data = process_data(infile);
     // for (auto i : data) {
     //     std::cout << std::hex << static_cast<int>(i) << std::endl;
     // }
