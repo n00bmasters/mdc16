@@ -4,6 +4,15 @@
 #include "register.h"
 #include <cstdint>
 
+static Register getRegister(uint16_t raw, int pos) {
+  return static_cast<Register>((raw >> pos) & 0b111);
+}
+
+template<class T, int size>
+static T getOp(uint16_t raw, int pos) {
+  return static_cast<T>((raw >> pos) & ((1 << size) - 1));
+}
+
 //
 // ================= ZERO_OP =================
 //
@@ -22,8 +31,9 @@ struct InstructionZeroOp : public Instruction16 {
 
 struct InstructionOneOp : public Instruction16 {
 
-  InstructionOneOp(uint16_t raw_, one_op op_type, Register reg)
-      : Instruction16(raw_), _op_type(op_type), _register(reg) {}
+  InstructionOneOp(uint16_t raw_)
+      : Instruction16(raw_), _op_type(getOp<one_op, 4>(raw_, 3)),
+        _register(getRegister(raw_, 0)) {}
 
   const one_op _op_type;
   const Register _register;
