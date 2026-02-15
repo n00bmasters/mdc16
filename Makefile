@@ -59,5 +59,9 @@ $(EXAMPLES_DIR)/%.img: $(EXAMPLES_DIR)/%.asm
 clean-examples:
 	rm -f $(EXAMPLE_TARGETS)
 
+# Format
+format:
+	find $(SRC_DIR) -type f \( -name "*.cpp" -o -name "*.h" \) -print0 | xargs -0 clang-format -i
+
 # Phony targets
-.PHONY: all clean run examples clean-examples
+.PHONY: all clean run examples clean-examples format
