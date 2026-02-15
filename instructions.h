@@ -1,0 +1,183 @@
+#pragma once
+#include "enums.h"
+#include "instruction.h"
+#include "register.h"
+#include <cstdint>
+
+//
+// ================= ZERO_OP =================
+//
+
+struct InstructionZeroOp : public Instruction16 {
+
+  InstructionZeroOp(uint16_t raw_, zero_op op_type_)
+      : Instruction16(raw_), op_type(op_type_) {}
+
+  const zero_op op_type;
+};
+
+//
+// ================= ONE_OP =================
+//
+
+struct InstructionOneOp : public Instruction16 {
+
+  InstructionOneOp(uint16_t raw_, one_op op_type, Register reg)
+      : Instruction16(raw_), _op_type(op_type), _register(reg) {}
+
+  const one_op _op_type;
+  const Register _register;
+};
+
+//
+// ================= TWO_OP =================
+//
+
+struct InstructionTwoOp : public Instruction16 {
+  InstructionTwoOp(uint16_t raw_, two_op op_type_, Register reg1, Register reg2)
+      : Instruction16(raw_), op_type(op_type_), _reg1(reg1), _reg2(reg2) {}
+
+  const two_op op_type;
+  const Register _reg1, _reg2;
+};
+
+//
+// ================= MEM2 =================
+//
+
+struct InstructionMem2 : public Instruction16 {
+
+  InstructionMem2(uint16_t raw_, mem2_op op_type_, Register rs, Register rd)
+      : Instruction16(raw_), op_type(op_type_), _rs(rs), _rd(rd) {}
+
+  const mem2_op op_type;
+  const Register _rs, _rd;
+};
+
+//
+// ================= IMM6 =================
+//
+
+struct InstructionImm6 : public Instruction16 {
+
+  InstructionImm6(uint16_t raw_, imm_6_op op_type_, Register rd)
+      : Instruction16(raw_), op_type(op_type_), _rd(rd) {}
+
+  const imm_6_op op_type;
+  const Register _rd;
+};
+
+//
+// ================= IMM9 =================
+//
+
+struct InstructionImm9 : public Instruction16 {
+  InstructionImm9(uint16_t raw_, imm9_op_type op_type_, uint16_t immediate)
+      : Instruction16(raw_), op_type(op_type_), _immediate(immediate) {}
+
+  const imm9_op_type op_type;
+  const uint16_t _immediate;
+};
+
+//
+// ================= MEM3 =================
+//
+
+struct InstructionMem3 : public Instruction16 {
+  InstructionMem3(uint16_t raw_, mem3_opt_type op_type_, Register rs0,
+                  Register rs1, Register rd)
+      : Instruction16(raw_), op_type(op_type_), _rs0(rs0), _rs1(rs1), _rd(rd) {}
+
+  const mem3_opt_type op_type;
+  const Register _rs0, _rs1, _rd;
+};
+
+//
+// ================= SHIFTS =================
+//
+
+struct InstructionShift : public Instruction16 {
+
+  InstructionShift(uint16_t raw_, shifts_op_type op_type_, Register rs,
+                   Register rd, uint8_t shift_val)
+      : Instruction16(raw_), op_type(op_type_), _rs(rs), _rd(rd),
+        _shift_val(shift_val) {}
+
+  const shifts_op_type op_type;
+  const Register _rs, _rd;
+  const uint8_t _shift_val;
+};
+
+//
+// ================= ALU2 =================
+//
+
+struct InstructionALU2 : public Instruction16 {
+
+  InstructionALU2(uint16_t raw_, alu2_op_type op_type_, Register rs,
+                  Register rd)
+      : Instruction16(raw_), op_type(op_type_), _rs(rs), _rd(rd) {}
+
+  const alu2_op_type op_type;
+  const Register _rs, _rd;
+};
+
+//
+// ================= ALU3 =================
+//
+
+struct InstructionALU3 : public Instruction16 {
+
+  InstructionALU3(uint16_t raw_, alu3_op_type op_type_, Register rs0,
+                  Register rs1, Register rd)
+      : Instruction16(raw_), op_type(op_type_), _rs0(rs0), _rs1(rs1), _rd(rd) {}
+
+  const alu3_op_type op_type;
+  const Register _rs0, _rs1, _rd;
+};
+
+//
+// ================= ALU3_IND =================
+//
+
+struct InstructionALU3Ind : public Instruction16 {
+  explicit InstructionALU3Ind(uint16_t raw_, alu3_ind_op_type op_type_,
+                              Register rs, Register rd)
+      : Instruction16(raw_), op_type(op_type_), _rs(rs), _rd(rd) {}
+
+  const alu3_ind_op_type op_type;
+  const Register _rs, _rd;
+};
+
+//
+// ================= BRANCH ABS =================
+//
+
+struct InstructionBranchAbs : public Instruction16 {
+  explicit InstructionBranchAbs(uint16_t raw_, uint8_t condition)
+      : Instruction16(raw_), _condition(condition) {}
+
+  const uint8_t _condition;
+};
+
+//
+// ================= BRANCH REL =================
+//
+
+struct InstructionBranchRelN : public Instruction16 {
+  explicit InstructionBranchRelN(uint16_t raw_, uint8_t condition,
+                                 uint16_t immediate)
+      : Instruction16(raw_), _condition(condition), _immediate(immediate) {}
+
+  const uint8_t _condition;
+  const uint16_t _immediate;
+};
+
+struct InstructionBranchRelP : public Instruction16 {
+  explicit InstructionBranchRelP(uint16_t raw_, uint8_t condition,
+                                 uint16_t immediate)
+      : Instruction16(raw_), _condition(condition), _immediate(immediate) {}
+
+  const uint16_t _immediate;
+  const uint8_t _condition;
+};
