@@ -1,0 +1,19 @@
+name: clang-format
+
+on:
+  push:
+
+jobs:
+  clang-format:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install clang-format
+        run: sudo apt-get update && sudo apt-get install -y clang-format
+
+      - name: Check formatting
+        run: |
+          find . -type f \( -name "*.cpp" -o -name "*.h" \) -print0 | xargs -0 clang-format -i
+          git diff --exit-code
