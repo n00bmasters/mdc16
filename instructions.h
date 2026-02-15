@@ -75,9 +75,9 @@ struct InstructionMem2 : public Instruction16 {
   InstructionMem2(uint16_t raw_, mem2_op op_type_, Register rs, Register rd)
       : Instruction16(raw_), op_type(getOp<mem2_op, 5>(raw_, 6)),
         _rs(getRegister(raw_, 3)), _rd(getRegister(raw_, 0)) {
-    assert(((raw_ >> 13) & 0b111) == 0b011);
-    assert(((raw_ >> 9) & 0b1111) == static_cast<uint16_t>(op_type));
-    assert(((raw_ >> 3) & 0b111111) == static_cast<uint16_t>(rs));
+    assert(((raw_ >> 11) & 0b11111) == 0b01010);
+    assert(((raw_ >> 6) & 0b1111) == static_cast<uint16_t>(op_type));
+    assert(((raw_ >> 3) & 0b111) == static_cast<uint16_t>(rs));
     assert((raw_ & 0b111) == static_cast<uint16_t>(rd));
   }
 
