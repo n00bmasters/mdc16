@@ -1,0 +1,9 @@
+CompileFlags:
+  Add:
+    - -std=c++17
+
+Diagnostics:
+  UnusedIncludes: Strict
+
+Format:
+  Style: file
