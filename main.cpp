@@ -3,6 +3,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <cinttypes>
 
 std::vector<std::byte> process_data(std::ifstream& infile) {
     std::vector<std::byte> v;
